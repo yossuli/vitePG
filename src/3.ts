@@ -1,11 +1,11 @@
 type ShiftL<
   Bits extends string[],
   n extends number,
-  EX extends string[] = [],
+  acc extends string[] = [],
 > = Bits extends [infer First extends string, ...infer Rest extends string[]]
-  ? EX["length"] extends n
-    ? [...EX, First, ...Rest]
-    : [...ShiftL<Rest, n, [First, ...EX]>, "0"]
+  ? acc["length"] extends n
+    ? [...acc, First, ...Rest]
+    : [...ShiftL<Rest, n, [First, ...acc]>, "0"]
   : never;
 
 type hoge = ShiftL<["1", "0", "1", "1"], 3>;
@@ -13,15 +13,16 @@ type hoge = ShiftL<["1", "0", "1", "1"], 3>;
 type ShiftR<
   Bits extends string[],
   n extends number,
-  EX extends string[] = [],
+  acc extends string[] = [],
 > = Bits extends [...infer Rest extends string[], infer Last extends string]
-  ? EX["length"] extends n
+  ? acc["length"] extends n
     ? [Last, ...Rest]
-    : ["0", ...ShiftR<Rest, n, [...EX, Last]>]
+    : ["0", ...ShiftR<Rest, n, [...acc, Last]>]
   : Bits;
 type hoge2 = ShiftR<Fill<["1", "0", "1", "1"], 16>, 3>;
 
 type Xor<A extends string[], B extends string[]> = {
+  // @ts-expect-error: 再帰にすればエラーにならないが...
   [K in keyof A]: A[K] extends B[K] ? "0" : "1";
 };
 
@@ -56,15 +57,14 @@ type Mod<Bits extends string[], Row extends Bit[]> = Fill<
   Row,
   Bits["length"]
 > extends infer RowF
-  ? [
-      ...{
-        [K in keyof Bits]: Bits[K] extends "1"
-          ? RowF[K] extends "1"
-            ? "1"
-            : "0"
-          : "0";
-      },
-    ]
+  ? {
+      [K in keyof Bits]: Bits[K] extends "1"
+        ? // @ts-expect-error: 再帰にすればエラーにならないが...
+          RowF[K] extends "1"
+          ? "1"
+          : "0"
+        : "0";
+    }
   : never;
 
 type hoge6 = Mod<["1", "0", "1", "1"], ["1", "0"]>;
@@ -107,12 +107,10 @@ type RandomsBitsPair<
       ? [
           Bit2Dec<Mod<RRandomSeed, ArrayFrom<"1", size>>>["length"],
           Bit2Dec<Mod<RandomSeed, ArrayFrom<"1", size>>>["length"],
-        ] extends infer randomPair
-        ? randomPair extends number[]
-          ? randomPair extends acc[number]
-            ? RandomsBitsPair<Random<RRandomSeed>, n, size, acc>
-            : RandomsBitsPair<Random<RandomSeed>, n, size, [randomPair, ...acc]>
-          : never
+        ] extends infer randomPair extends [number, number]
+        ? randomPair extends acc[number]
+          ? RandomsBitsPair<Random<RRandomSeed>, n, size, acc>
+          : RandomsBitsPair<Random<RandomSeed>, n, size, [randomPair, ...acc]>
         : never
       : never
     : never;
@@ -153,10 +151,6 @@ type SetBomb<Field extends string[][], Bombs extends number[][]> = __SetBomb<
   Bombs
 >;
 
-type Split<Bits extends string> = Bits extends `${infer F}${infer R}`
-  ? [F, ...Split<R>]
-  : [];
-
 // @ts-ignore
 type hoge10 = SetBomb<Field, RandomsBitsPair<SEED, 5, 2>>;
 
@@ -165,21 +159,15 @@ type GameSetting<
   bombNum extends number,
   Seed extends Bit[],
   FirstClick extends [number, number],
-  // @ts-ignore
+  // @ts-expect-error: そうそう再帰上限には引っかからないはず...
 > = Pow2<ArrayFrom<"", lv>>["length"] extends infer Size extends number
   ? RandomsBitsPair<Seed, bombNum, lv, [FirstClick]> extends [
       ...infer Bombs extends number[][],
       infer _,
     ]
-    ? // @ts-ignore
-      SetBomb<
-        // @ts-ignore
-        ArrayFrom<ArrayFrom<"0", Size>, Size>,
-        Bombs
-      >
+    ? SetBomb<ArrayFrom<ArrayFrom<"0", Size>, Size>, Bombs>
     : never
   : never;
 
-type hoge11 = GameSetting<2, 15, SEED, [0, 0]>;
-
-type SEED = ["1", "0", "1", "1", "0", "1", "0", "1", "0"];
+type bombMap = GameSetting<2, 6, SEED, [0, 0]>;
+type SEED = ["1", "1", "1", "0", "1", "0", "0", "0", "1"];
