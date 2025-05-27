@@ -101,23 +101,56 @@ type RandomsBitsPair<
   acc extends number[][] = [],
 > = acc["length"] extends n
   ? acc
-  : Random<Seed> extends infer RandomSeed
-    ? RandomSeed extends Bit[]
-      ? Random<RandomSeed> extends infer RRandomSeed
-        ? RRandomSeed extends Bit[]
-          ? [
-              Bit2Dec<Mod<RRandomSeed, ["1", "1"]>>["length"],
-              Bit2Dec<Mod<RandomSeed, ["1", "1"]>>["length"],
-            ] extends infer randomPair
-            ? randomPair extends number[]
-              ? randomPair extends acc[number]
-                ? RandomsBitsPair<Random<RRandomSeed>, n, acc>
-                : RandomsBitsPair<Random<RandomSeed>, n, [randomPair, ...acc]>
-              : never
-            : never
+  : Random<Seed> extends infer RandomSeed extends Bit[]
+    ? Random<RandomSeed> extends infer RRandomSeed extends Bit[]
+      ? [
+          Bit2Dec<Mod<RRandomSeed, ["1", "1"]>>["length"],
+          Bit2Dec<Mod<RandomSeed, ["1", "1"]>>["length"],
+        ] extends infer randomPair
+        ? randomPair extends number[]
+          ? randomPair extends acc[number]
+            ? RandomsBitsPair<Random<RRandomSeed>, n, acc>
+            : RandomsBitsPair<Random<RandomSeed>, n, [randomPair, ...acc]>
           : never
         : never
       : never
     : never;
 
 type hoge9 = RandomsBitsPair<["1", "0", "1", "1", "0", "1", "0", "1", "0"], 16>;
+
+type ArrayFrom<T, N extends number, R extends T[] = []> = R["length"] extends N
+  ? R
+  : ArrayFrom<T, N, [...R, T]>;
+
+type Field = ArrayFrom<ArrayFrom<"0", 4>, 4>;
+
+type ____SetBomb<
+  Field extends string[],
+  Bombs extends number[][],
+  K extends number,
+  acc extends string[] = [],
+> = Field extends [infer F extends string, ...infer Rest extends string[]]
+  ? [acc["length"], K] extends Bombs[number]
+    ? ____SetBomb<Rest, Bombs, K, [...acc, "B"]>
+    : ____SetBomb<Rest, Bombs, K, [...acc, "0"]>
+  : acc;
+
+type __SetBomb<
+  Field extends string[][],
+  Bombs extends number[][],
+  acc extends string[][] = [],
+> = Field extends [infer F extends string[], ...infer Rest extends string[][]]
+  ? __SetBomb<Rest, Bombs, [...acc, ____SetBomb<F, Bombs, acc["length"]>]>
+  : acc;
+
+type SetBomb<Field extends string[][], Bombs extends number[][]> = __SetBomb<
+  Field,
+  Bombs
+>;
+
+type Split<Bits extends string> = Bits extends `${infer F}${infer R}`
+  ? [F, ...Split<R>]
+  : [];
+
+type hoge10 = SetBomb<Field, RandomsBitsPair<SEED, 5>>;
+type SEED = ["1", "0", "1", "1", "1", "1", "0", "1", "1"];
