@@ -98,36 +98,26 @@ type random = Bit2Dec<
 type RandomsBitsPair<
   Seed extends Bit[],
   n extends number,
-  acc extends Bit[][][] = [],
+  acc extends number[][] = [],
 > = acc["length"] extends n
   ? acc
   : Random<Seed> extends infer RandomSeed
     ? RandomSeed extends Bit[]
       ? Random<RandomSeed> extends infer RRandomSeed
         ? RRandomSeed extends Bit[]
-          ? [RRandomSeed, RandomSeed] extends acc[number]
-            ? RandomsBitsPair<Random<RRandomSeed>, n, acc>
-            : RandomsBitsPair<
-                Random<RandomSeed>,
-                n,
-                [[RRandomSeed, RandomSeed], ...acc]
-              >
+          ? [
+              Bit2Dec<Mod<RRandomSeed, ["1", "1"]>>["length"],
+              Bit2Dec<Mod<RandomSeed, ["1", "1"]>>["length"],
+            ] extends infer randomPair
+            ? randomPair extends number[]
+              ? randomPair extends acc[number]
+                ? RandomsBitsPair<Random<RRandomSeed>, n, acc>
+                : RandomsBitsPair<Random<RandomSeed>, n, [randomPair, ...acc]>
+              : never
+            : never
           : never
         : never
       : never
     : never;
 
-type hoge9 = RandomsBitsPair<["1", "0", "1", "1", "0", "1", "0", "1", "0"], 5>;
-
-type RandomsDec<BitsS extends Bit[][][]> = {
-  [K in keyof BitsS]: [
-    Bit2Dec<Mod<Random<BitsS[K][0]>, ["1", "1", "1"]>>["length"],
-    Bit2Dec<Mod<Random<BitsS[K][1]>, ["1", "1", "1"]>>["length"],
-  ];
-};
-
-type Split<Str extends string> = Str extends `${infer Head},${infer Tail}`
-  ? [Head, ...Split<Tail>]
-  : [Str];
-
-type hoge10 = RandomsDec<RandomsBitsPair<Split<"1,0,1,1,0,1,0,1,0">, 5>>;
+type hoge9 = RandomsBitsPair<["1", "0", "1", "1", "0", "1", "0", "1", "0"], 16>;
