@@ -98,25 +98,30 @@ type random = Bit2Dec<
 type RandomsBitsPair<
   Seed extends Bit[],
   n extends number,
+  size extends number,
   acc extends number[][] = [],
 > = acc["length"] extends n
   ? acc
   : Random<Seed> extends infer RandomSeed extends Bit[]
     ? Random<RandomSeed> extends infer RRandomSeed extends Bit[]
       ? [
-          Bit2Dec<Mod<RRandomSeed, ["1", "1"]>>["length"],
-          Bit2Dec<Mod<RandomSeed, ["1", "1"]>>["length"],
+          Bit2Dec<Mod<RRandomSeed, ArrayFrom<"1", size>>>["length"],
+          Bit2Dec<Mod<RandomSeed, ArrayFrom<"1", size>>>["length"],
         ] extends infer randomPair
         ? randomPair extends number[]
           ? randomPair extends acc[number]
-            ? RandomsBitsPair<Random<RRandomSeed>, n, acc>
-            : RandomsBitsPair<Random<RandomSeed>, n, [randomPair, ...acc]>
+            ? RandomsBitsPair<Random<RRandomSeed>, n, size, acc>
+            : RandomsBitsPair<Random<RandomSeed>, n, size, [randomPair, ...acc]>
           : never
         : never
       : never
     : never;
 
-type hoge9 = RandomsBitsPair<["1", "0", "1", "1", "0", "1", "0", "1", "0"], 16>;
+type hoge9 = RandomsBitsPair<
+  ["1", "0", "1", "1", "0", "1", "0", "1", "0"],
+  16,
+  2
+>;
 
 type ArrayFrom<T, N extends number, R extends T[] = []> = R["length"] extends N
   ? R
@@ -129,7 +134,7 @@ type ____SetBomb<
   Bombs extends number[][],
   K extends number,
   acc extends string[] = [],
-> = Field extends [infer F extends string, ...infer Rest extends string[]]
+> = Field extends [infer _, ...infer Rest extends string[]]
   ? [acc["length"], K] extends Bombs[number]
     ? ____SetBomb<Rest, Bombs, K, [...acc, "B"]>
     : ____SetBomb<Rest, Bombs, K, [...acc, "0"]>
@@ -152,5 +157,29 @@ type Split<Bits extends string> = Bits extends `${infer F}${infer R}`
   ? [F, ...Split<R>]
   : [];
 
-type hoge10 = SetBomb<Field, RandomsBitsPair<SEED, 5>>;
-type SEED = ["1", "0", "1", "1", "1", "1", "0", "1", "1"];
+// @ts-ignore
+type hoge10 = SetBomb<Field, RandomsBitsPair<SEED, 5, 2>>;
+
+type GameSetting<
+  lv extends number,
+  bombNum extends number,
+  Seed extends Bit[],
+  FirstClick extends [number, number],
+  // @ts-ignore
+> = Pow2<ArrayFrom<"", lv>>["length"] extends infer Size extends number
+  ? RandomsBitsPair<Seed, bombNum, lv, [FirstClick]> extends [
+      ...infer Bombs extends number[][],
+      infer _,
+    ]
+    ? // @ts-ignore
+      SetBomb<
+        // @ts-ignore
+        ArrayFrom<ArrayFrom<"0", Size>, Size>,
+        Bombs
+      >
+    : never
+  : never;
+
+type hoge11 = GameSetting<2, 15, SEED, [0, 0]>;
+
+type SEED = ["1", "0", "1", "1", "0", "1", "0", "1", "0"];
