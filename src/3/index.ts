@@ -1,60 +1,43 @@
+import type { ArrayFrom } from "./arrayFrom";
 import type { Bit2Dec } from "./bit2Dec";
 import type { Mod2n, Pow2 } from "./calc";
 import type { Fill } from "./fill";
-import type { NthTuple } from "./nthTuple";
 import type { Xor } from "./op";
 import type { ShiftL, ShiftR } from "./shift";
+import type { SliceR } from "./slice";
 export type Bit = "1" | "0";
 
-type Random<Seed extends NthTuple<Bit, 9>> = Xor<
-  Fill<Seed, 16>,
-  ShiftL<Seed, 7>
+type Random<Seed extends Bit[]> = Xor<
+  Fill<SliceR<Seed, 16>, 16>,
+  SliceR<ShiftL<Seed, 7>, 16>
 > extends infer T extends string[]
   ? Xor<T, ShiftR<T, 9>>
   : never;
 
+type genIndex<SEED extends Bit[], Size extends number> = Bit2Dec<
+  Mod2n<Random<SEED>, ArrayFrom<"1", Size>>
+>;
 type RandomsBitsPair<
-  Seed extends NthTuple<Bit, 9>,
+  Seed extends Bit[],
   n extends number,
   size extends number,
   acc extends number[][] = [],
 > = acc["length"] extends n
   ? acc
-  : Random<Seed> extends [
-        ...NthTuple<Bit, 7>,
-        ...infer RandomSeed extends NthTuple<Bit, 9>,
-      ]
-    ? Random<RandomSeed> extends [
-        ...NthTuple<Bit, 7>,
-        ...infer RRandomSeed extends NthTuple<Bit, 9>,
-      ]
+  : Random<Seed> extends infer RandomSeed extends Bit[]
+    ? Random<RandomSeed> extends infer RRandomSeed extends Bit[]
       ? [
-          Bit2Dec<Mod2n<RRandomSeed, ArrayFrom<"1", size>>>,
-          Bit2Dec<Mod2n<RandomSeed, ArrayFrom<"1", size>>>,
+          genIndex<RRandomSeed, size>,
+          genIndex<RandomSeed, size>,
         ] extends infer randomPair extends [number, number]
         ? randomPair extends acc[number]
-          ? Random<RRandomSeed> extends [
-              ...NthTuple<Bit, 7>,
-              ...infer RRR extends NthTuple<Bit, 9>,
-            ]
+          ? Random<RRandomSeed> extends infer RRR extends Bit[]
             ? RandomsBitsPair<RRR, n, size, acc>
             : never
           : RandomsBitsPair<RRandomSeed, n, size, [randomPair, ...acc]>
         : never
       : never
     : never;
-
-type hoge9 = RandomsBitsPair<
-  ["1", "0", "1", "1", "0", "1", "0", "1", "0"],
-  4,
-  2
->;
-
-type ArrayFrom<T, N extends number, R extends T[] = []> = R["length"] extends N
-  ? R
-  : ArrayFrom<T, N, [...R, T]>;
-
-type Field = ArrayFrom<ArrayFrom<"0", 4>, 4>;
 
 type ____SetBomb<
   Field extends string[],
@@ -80,13 +63,10 @@ type SetBomb<Field extends string[][], Bombs extends number[][]> = __SetBomb<
   Bombs
 >;
 
-// @ts-ignore
-type hoge10 = SetBomb<Field, RandomsBitsPair<SEED, 5, 2>>;
-
 type GameSetting<
   lv extends number,
   bombNum extends number,
-  Seed extends NthTuple<Bit, 9>,
+  Seed extends Bit[],
   FirstClick extends [number, number],
   // @ts-expect-error: そうそう再帰上限には引っかからないはず...
 > = Pow2<ArrayFrom<"", lv>>["length"] extends infer Size extends number

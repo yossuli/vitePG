@@ -4,7 +4,7 @@ export default defineConfig(() => {
   return {
     base: "./",
     test: {
-      include: ["./src/*.ts"],
+      include: ["./src/**/*.ts"],
     },
   };
 });

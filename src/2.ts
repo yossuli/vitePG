@@ -44,3 +44,10 @@ type lv2 = EnsureUniqueStrArrTest<readonly ["a", "b", "c", "a"]>;
 type test<T extends readonly string[]> = T extends (infer U)[] ? U : never;
 
 type hoge4 = test<readonly ["a", "b", "c", "a"]>;
+
+if (import.meta.vitest) {
+  const { describe, it } = import.meta.vitest;
+  describe("", () => {
+    it("should pass the test", () => {});
+  });
+}

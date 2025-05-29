@@ -17,7 +17,5 @@
     "source.organizeImports.biome": "always",
     "quickFix.biome": "always",
     "source.fixAll.biome": "always"
-  },
-  "cSpell.words": ["Taberse"],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  }
 }

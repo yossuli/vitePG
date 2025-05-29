@@ -2,11 +2,13 @@ export type SliceR<
   Bits extends any[],
   n extends number,
   acc extends any[] = [],
-> = acc["length"] extends n
-  ? acc
+> = Bits["length"] extends n
+  ? Bits
   : Bits extends [infer First, ...infer Rest extends any[]]
-    ? SliceR<Rest, n, Rest>
-    : [];
+    ? Rest["length"] extends 0
+      ? [...acc, First]
+      : SliceR<Rest, n, [...acc, First]>
+    : never;
 
 if (import.meta.vitest) {
   const { describe, it, expectTypeOf } = import.meta.vitest;
@@ -19,7 +21,7 @@ if (import.meta.vitest) {
       expectTypeOf<SliceR<[true, false, true], 1>>().toEqualTypeOf<[true]>();
     });
     it("should return an empty array if n is greater than the length of the array", () => {
-      expectTypeOf<SliceR<[1, 2], 5>>().toEqualTypeOf<[]>();
+      expectTypeOf<SliceR<[1, 2], 5>>().toEqualTypeOf<[1, 2]>();
     });
   });
 }
