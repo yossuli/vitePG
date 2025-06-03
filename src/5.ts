@@ -1,57 +1,48 @@
 import type { ArrayFrom } from "./3/arrayFrom";
 
-type GenOut<T extends number, IndexT extends number, Out extends number[]> = {
-  [K in keyof Out]: `${IndexT}` extends K ? T : Out[K];
+type GenOut<T extends number, ACC extends number[], Out extends number[]> = {
+  [K in keyof Out]: `${ACC["length"]}` extends K ? T : Out[K];
 };
 
 type hoge_1<
   A extends number[],
   Out extends number[],
   ACC extends number[],
-  Loop extends number[],
+  Loop extends number[] = ArrayFrom<number, 2>,
   LoopAcc extends number[] = [],
 > = A extends [...ACC, infer T extends number, ...number[]]
   ? Loop extends [...infer Rest extends number[], number]
     ? T extends 0
       ? hoge_1<
           A,
-          GenOut<T, ACC["length"], Out>,
+          GenOut<T, ACC, Out>,
           [...ACC, number],
           Rest,
           [...LoopAcc, number]
         >
-      : GenOut<T, ACC["length"], Out>
+      : GenOut<T, ACC, Out>
     : Out
   : Out;
 
 type NumNum = [number, number];
 
-type hoge_2<
-  A extends number[],
-  Out extends number[],
-  ACCF extends number[],
-  Loop extends number[],
-> = A extends [...ACCF, ...infer T extends NumNum, ...number[]]
-  ? Loop extends [...infer Rest extends number[], number]
-    ? T[1] extends 0
-      ? hoge_1<A, GenOut<T[0], ACCF["length"], Out>, [...ACCF, number], Rest>
-      : GenOut<T[0], ACCF["length"], Out>
-    : Out
+type hoge_2<A, Out extends number[], ACC extends number[]> = A extends [
+  ...ACC,
+  ...infer T extends NumNum,
+  ...number[],
+]
+  ? T[1] extends 0
+    ? hoge_1<A, GenOut<T[0], ACC, Out>, [...ACC, number], NumNum>
+    : GenOut<T[0], ACC, Out>
   : Out;
 
 export type hoge<
   A extends number[],
   Out extends number[],
   Acc extends number[] = [],
-  Loop extends number[] = ArrayFrom<number, 3>,
-  LoopAcc extends number[] = [],
-> = [...Acc, ...LoopAcc] extends infer ACC extends number[]
-  ? ACC["length"] extends 0
-    ? hoge_1<A, Out, ACC, ArrayFrom<number, 2>>
-    : ACC extends [...infer ACCF extends number[], number]
-      ? hoge_2<A, Out, ACCF, Loop>
-      : never
-  : never;
+> = Acc extends [...infer ACC extends number[], number]
+  ? hoge_2<A, Out, ACC>
+  : hoge_1<A, Out, Acc>;
 
 if (import.meta.vitest) {
   const { describe, it, expectTypeOf } = import.meta.vitest;
