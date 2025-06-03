@@ -64,30 +64,47 @@ export type hoge<
       : never
   : never;
 
-type hoge_r = hoge<
-  Filter<Rolling3<[0, 0, 0, 0, 1, 0, 0, 0, 0]>>,
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-  ArrayFrom<number, 6>
->;
+if (import.meta.vitest) {
+  const { describe, it, expectTypeOf } = import.meta.vitest;
 
-// type hoge_2 = hoge<
-//   [1, 0, 1, 0],
-//   hoge<
-//     [1, 0, 1, 0],
-//     hoge<
-//       [1, 0, 1, 0],
-//       hoge<
-//         [1, 0, 1, 0],
-//         hoge<[1, 0, 1, 0], [0, 0, 0, 0], ArrayFrom<number, 2>>,
-//         ArrayFrom<number, 2>,
-//         [number]
-//       >,
-//       ArrayFrom<number, 2>,
-//       [number, number]
-//     >,
-//     ArrayFrom<number, 2>,
-//     [number, number, number]
-//   >,
-//   ArrayFrom<number, 2>,
-//   [number, number, number,]
-// >;
+  describe("border", () => {
+    it("left", () => {
+      expectTypeOf<
+        hoge<
+          Filter<Rolling3<[0, 0, 0, 0, 1, 0, 0, 0, 0]>>,
+          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+          ArrayFrom<number, 0>
+        >
+      >().toEqualTypeOf<[0, 0, -1, -1, -1, -1, -1, -1, -1]>();
+    });
+    it("right", () => {
+      expectTypeOf<
+        hoge<
+          Filter<Rolling3<[0, 0, 0, 0, 1, 0, 0, 0, 0]>>,
+          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+          ArrayFrom<number, 8>
+        >
+      >().toEqualTypeOf<[-1, -1, -1, -1, -1, -1, -1, 0, 0]>();
+    });
+  });
+  it("center", () => {
+    it("left", () => {
+      expectTypeOf<
+        hoge<
+          Filter<Rolling3<[0, 0, 0, 0, 1, 0, 0, 0, 0]>>,
+          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+          ArrayFrom<number, 1>
+        >
+      >().toEqualTypeOf<[0, 0, 0, -1, -1, -1, -1, -1, -1]>();
+    });
+    it("right", () => {
+      expectTypeOf<
+        hoge<
+          Filter<Rolling3<[0, 0, 0, 0, 1, 0, 0, 0, 0]>>,
+          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+          ArrayFrom<number, 6>
+        >
+      >().toEqualTypeOf<[-1, -1, -1, -1, -1, 1, 0, 0, -1]>();
+    });
+  });
+}
