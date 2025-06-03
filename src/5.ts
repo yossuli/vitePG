@@ -8,48 +8,37 @@ type hoge_1<
   A extends number[],
   Out extends number[],
   ACC extends number[],
-  Acc extends number[],
   Loop extends number[],
-  LoopAcc extends number[],
-  IndexT extends number,
+  LoopAcc extends number[] = [],
 > = A extends [...ACC, infer T extends number, ...number[]]
   ? Loop extends [...infer Rest extends number[], number]
     ? T extends 0
-      ? hoge_3<A, GenOut<T, IndexT, Out>, Acc, Rest, [...LoopAcc, number]>
-      : GenOut<T, IndexT, Out>
+      ? hoge_1<
+          A,
+          GenOut<T, ACC["length"], Out>,
+          [...ACC, number],
+          Rest,
+          [...LoopAcc, number]
+        >
+      : GenOut<T, ACC["length"], Out>
     : Out
   : Out;
+
+type NumNum = [number, number];
 
 type hoge_2<
   A extends number[],
   Out extends number[],
-  ACC extends number[],
-  Acc extends number[],
+  ACCF extends number[],
   Loop extends number[],
-  LoopAcc extends number[],
-  IndexT extends number,
-> = A extends [
-  ...ACC,
-  infer F extends number,
-  infer T extends number,
-  ...number[],
-]
+> = A extends [...ACCF, ...infer T extends NumNum, ...number[]]
   ? Loop extends [...infer Rest extends number[], number]
-    ? T extends 0
-      ? hoge_3<A, GenOut<F, IndexT, Out>, Acc, Rest, LoopAcc>
-      : GenOut<F, IndexT, Out>
+    ? T[1] extends 0
+      ? hoge_1<A, GenOut<T[0], ACCF["length"], Out>, [...ACCF, number], Rest>
+      : GenOut<T[0], ACCF["length"], Out>
     : Out
   : Out;
 
-export type hoge_3<
-  A extends number[],
-  Out extends number[],
-  Acc extends number[] = [],
-  Loop extends number[] = ArrayFrom<number, 3>,
-  LoopAcc extends number[] = [],
-> = [...Acc, ...LoopAcc] extends infer ACC extends number[]
-  ? hoge_1<A, Out, ACC, Acc, Loop, LoopAcc, ACC["length"]>
-  : never;
 export type hoge<
   A extends number[],
   Out extends number[],
@@ -58,9 +47,9 @@ export type hoge<
   LoopAcc extends number[] = [],
 > = [...Acc, ...LoopAcc] extends infer ACC extends number[]
   ? ACC["length"] extends 0
-    ? hoge_1<A, Out, ACC, Acc, ArrayFrom<number, 2>, LoopAcc, ACC["length"]>
+    ? hoge_1<A, Out, ACC, ArrayFrom<number, 2>>
     : ACC extends [...infer ACCF extends number[], number]
-      ? hoge_2<A, Out, ACCF, Acc, Loop, LoopAcc, ACCF["length"]>
+      ? hoge_2<A, Out, ACCF, Loop>
       : never
   : never;
 
