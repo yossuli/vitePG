@@ -19,16 +19,18 @@ export type hoge<
             Acc,
             [...MaskAcc, number]
           >
-        : hoge<A, Out, ArrayFrom<number, 2>, [...Acc, number]>
-      : hoge<A, Out, ArrayFrom<number, 2>, [...Acc, number]>
+        : {
+            [K in keyof Out]: `${IndexT}` extends K ? T : Out[K];
+          }
+      : Out
     : never
   : Out;
 
 type hoge_1 = hoge<
-  [0, 0, 0, 1],
-  [-1, -1, -1, -1],
-  ArrayFrom<number, 1>,
-  [number]
+  [0, 0, 0, 1, 0, 0],
+  [-1, -1, -1, -1, -1, -1],
+  ArrayFrom<number, 4>,
+  []
 >;
 
 // type hoge_2 = hoge<
