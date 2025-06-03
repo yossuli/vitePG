@@ -1,24 +1,21 @@
-type hoge<
+type Rolling3<
   A extends number[],
-  // B extends number[],
-  Mask extends number[],
-  MaskAcc extends number[] = [],
-  Acc extends number[] = [],
-> = Mask extends [infer Head extends number, ...infer Rest extends number[]]
-  ? A extends [...MaskAcc, infer T, ...infer Tail extends number[]]
-    ? T extends 1
-      ? hoge<A, Rest, [...MaskAcc, Head], [...Acc, MaskAcc["length"]]>
-      : hoge<A, Rest, [...MaskAcc, Head], [...Acc, 0]>
-    : Acc
-  : Acc;
+  Acc extends number[][] = [],
+> = Acc["length"] extends 0
+  ? A extends [infer M extends number, infer L extends number, ...number[]]
+    ? Rolling3<A, [[M, L]]>
+    : never
+  : A["length"] extends 2
+    ? [...Acc, [A[0], A[1]]]
+    : __Rolling3<A, Acc>;
 
-type hoge_1 = hoge<
-  [0, 0, 0, 1],
-  // [1, 2, 3, 4, 5],
-  [number, number, number, number]
->;
+type __Rolling3<A extends number[], Acc extends number[][] = []> = A extends [
+  infer F extends number,
+  infer M extends number,
+  infer L extends number,
+  ...infer Rest extends number[],
+]
+  ? Rolling3<[M, L, ...Rest], [...Acc, [F, M, L]]>
+  : never;
 
-// | 0 | 0 0 1
-// | 0 | 1 0 0
-// 0 | 0 | 0 1
-// 0 | 1 | 0 0
+type hoge = Rolling3<[1, 2, 3]>;

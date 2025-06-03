@@ -9,32 +9,27 @@ export type hoge<
 > = A extends [...MaskAcc, ...Acc, infer T extends number, ...number[]]
   ? [...Acc, ...MaskAcc]["length"] extends infer IndexT extends number
     ? Mask extends [...infer Rest extends number[], number]
-      ? T extends 1
+      ? T extends 0
         ? hoge<
             A,
             {
-              [K in keyof Out]: `${IndexT}` extends K ? 1 : Out[K];
+              [K in keyof Out]: `${IndexT}` extends K ? 0 : Out[K];
             },
             Rest,
             Acc,
             [...MaskAcc, number]
           >
-        : MaskAcc["length"] extends 0
-          ? hoge<A, Out, ArrayFrom<number, 2>, [...Acc, number]>
-          : hoge<
-              A,
-              {
-                [K in keyof Out]: `${IndexT}` extends K ? 0 : Out[K];
-              },
-              Rest,
-              Acc,
-              [...MaskAcc, number]
-            >
+        : hoge<A, Out, ArrayFrom<number, 2>, [...Acc, number]>
       : hoge<A, Out, ArrayFrom<number, 2>, [...Acc, number]>
     : never
   : Out;
 
-type hoge_1 = hoge<[1, 0, 0, 1], [-1, -1, -1, -1], ArrayFrom<number, 2>>;
+type hoge_1 = hoge<
+  [0, 0, 0, 1],
+  [-1, -1, -1, -1],
+  ArrayFrom<number, 1>,
+  [number]
+>;
 
 // type hoge_2 = hoge<
 //   [1, 0, 1, 0],
