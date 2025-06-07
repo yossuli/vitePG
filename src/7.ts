@@ -1,6 +1,5 @@
 import type { ArrayFrom } from "./3/arrayFrom";
 import type { hoge_1, hoge_2_1 } from "./5";
-("./5");
 type NNNum = [number, number, number];
 type hoge<
   A extends number[],
