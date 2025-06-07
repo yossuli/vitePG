@@ -18,11 +18,10 @@ type MatchSuf<
   Out extends number[],
   Rest extends number[],
   Acc extends number[] = [],
-  Fg extends number[] = [],
 > = Acc extends [...infer First extends number[], number]
   ? Out extends [...First, ...infer T extends [number, number], ...number[]]
     ? T extends [-1, 0]
-      ? hoge<A, hoge_2_1<A, Out, Acc>, Rest, [...Acc, number], [...Fg, 1]>
+      ? hoge<A, hoge_2_1<A, Out, Acc>, Rest, [...Acc, number], [1]>
       : Out
     : never
   : never;
@@ -36,11 +35,12 @@ type hoge<
 > = Mask extends [number, ...infer Rest extends [...number[]]]
   ? Acc["length"] extends 0
     ? MatchPre<A, Out, Rest, Acc, Fg>
-    : MatchPre<A, MatchSuf<A, Out, Rest, Acc, Fg>, Rest, Acc, Fg>
+    : MatchPre<A, MatchSuf<A, Out, Rest, Acc>, Rest, Acc, Fg>
   : Fg["length"] extends 0
     ? Out
-    : hoge<A, Out, ArrayFrom<number, A["length"]>, []>;
-type S = -1;
+    : hoge<A, Out>;
+
+    type S = -1;
 
 type hoge_r = hoge<[0, 0, 1, 0, 0], [-1, 0, -1, -1, 0]>;
 type hoge_r2 = hoge<
