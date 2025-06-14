@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "tsc": "tsc --noEmit --diagnostics",
+    "tsgo": "tsgo --noEmit --diagnostics"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
@@ -8,5 +10,9 @@
     "typescript": "5.8.0-dev.20241106",
     "vite": "^6.3.5",
     "vitest": "^3.1.4"
+  },
+  "dependencies": {
+    "@type-challenges/utils": "^0.1.1",
+    "@typescript/native-preview": "7.0.0-dev.20250613.1"
   }
 }

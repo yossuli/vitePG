@@ -19,9 +19,9 @@ type GameSetting<
     : never
   : never;
 
-type bombMap = GameSetting<2, 16, SEED, [0, 0]>;
+type bombMap = GameSetting<2, 16, SEED, [2, 2]>;
 type bombMap2 = GameSetting<2, 6, SEED, [0, 0]>;
-type SEED = ["1", "1", "1", "0", "1", "0", "0", "1", "0"];
+type SEED = ["1", "0", "1", "0", "1", "0", "0", "1", "0"];
 
 // function fn1<T extends never>(_: T) {}
 // declare const anyValue: any;
@@ -29,5 +29,5 @@ type SEED = ["1", "1", "1", "0", "1", "0", "0", "1", "0"];
 
 declare const anyValue: any;
 function fn2<T extends never>(): T {
-    return anyValue;
+  return anyValue;
 }

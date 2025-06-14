@@ -25,3 +25,26 @@ if (import.meta.vitest) {
     });
   });
 }
+
+type Slice<
+  T extends any[],
+  Start extends any[],
+  End extends any[],
+  _T = T,
+> = _T extends [...End, ...infer _U]
+  ? T extends [...infer U, ..._U]
+    ? U extends [...Start, ...infer V]
+      ? V
+      : []
+    : T
+  : never;
+
+// type hoge = Slice<[1, 2, 3, 4, 5], [any], [any, any, any]>;
+
+type Hoge<T, U extends any[] = []> = T extends [...U, ...infer V] ? V : never;
+
+// type hoge = Hoge<[1, 2, 3, 4, 5], [any, any, any]>;
+
+type hoge = [1, 2, 3, 4, 5] extends [...infer U, infer V extends 3, ...infer W]
+  ? [U, V, W]
+  : never;
