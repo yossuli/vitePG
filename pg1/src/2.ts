@@ -1,3 +1,5 @@
+import { expectTypeOf } from "vitest";
+
 type FilterTarget<
   T extends string,
   Array extends readonly string[],
@@ -48,6 +50,10 @@ type hoge4 = test<readonly ["a", "b", "c", "a"]>;
 if (import.meta.vitest) {
   const { describe, it } = import.meta.vitest;
   describe("", () => {
-    it("should pass the test", () => {});
+    it("should pass the test", () => {
+      expectTypeOf<["a", "b", "c", "a"]>().toEqualTypeOf<
+        [never, "b", "c", never]
+      >;
+    });
   });
 }
