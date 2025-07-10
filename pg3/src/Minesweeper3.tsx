@@ -1,5 +1,6 @@
 import "./App.css";
 import { useState } from "react";
+import { useCache } from "./hooks";
 
 type Size = { width: number; height: number };
 
@@ -80,8 +81,8 @@ const around = ({ x, y }: Pos) =>
     y: minMax(y + dy, 0, H - 1),
   }));
 
-export const Minesweeper = () => {
-  console.time("Minesweeper");
+export const Minesweeper3 = () => {
+  console.time("Minesweeper3");
   const [bombMap, setBombMap] = useState<BombMap>(
     // genBoard({ width: 9, height: 9 }, 0)
     genBoard({ width: 9, height: 9 }, 0).map((row, i) =>
@@ -100,28 +101,32 @@ export const Minesweeper = () => {
     setClickHistory((prev) => [...prev, { x, y, type: CLICK }]);
   };
 
-  const open = ({ x, y }: Pos) => {
+  const open = useCache(({ x, y }: Pos, argBoard: Board): Board => {
+    const board = structuredClone(argBoard);
     const count = bombCount({ x, y }, bombMap);
     board[x][y] = count;
     if (count === 0) {
-      around({ x, y }).forEach(({ x: nx, y: ny }) => {
+      return around({ x, y }).reduce((acc, { x: nx, y: ny }) => {
         if (board[nx][ny] === STONE) {
-          open({ x: nx, y: ny });
+          return open({ x: nx, y: ny }, acc);
         }
-      });
+        return acc;
+      }, board);
     }
-  };
-
-  ClickHistory.forEach(({ x, y, type }) => {
-    if (type === CLICK) {
-      open({ x, y });
-    }
+    return board;
   });
-  console.timeEnd("Minesweeper");
+
+  const computedBoard = ClickHistory.reduce((acc, { x, y, type }) => {
+    if (type === CLICK) {
+      return open({ x, y }, acc);
+    }
+    return acc;
+  }, board);
+  console.timeEnd("Minesweeper3");
   return (
     <div className="App">
       <div>
-        {board.map((row, r) => (
+        {computedBoard.map((row, r) => (
           <div key={r} style={{ display: "flex" }}>
             {row.map((cell, c) =>
               cell === STONE ? (

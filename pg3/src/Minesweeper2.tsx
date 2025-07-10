@@ -104,8 +104,12 @@ const open = <
 };
 
 export const Minesweeper2 = () => {
+  console.time("Minesweeper2");
   const [bombMap, setBombMap] = useState<BombMap>(
-    genBoard({ width: 9, height: 9 }, 0)
+    // genBoard({ width: 9, height: 9 }, 0)
+    genBoard({ width: 9, height: 9 }, 0).map((row, i) =>
+      row.map((_, j) => (i === j || (i === 0 && j === 8) ? B : C))
+    )
   );
   const [ClickHistory, setClickHistory] = useState<
     { x: number; y: number; type: CLICK_TYPE }[]
@@ -114,7 +118,7 @@ export const Minesweeper2 = () => {
 
   const clickHandler = ({ x, y }: Pos) => {
     if (ClickHistory.length === 0) {
-      setBombMap(genBombs({ width: W, height: H, bombs: BN }, { x, y }));
+      // setBombMap(genBombs({ width: W, height: H, bombs: BN }, { x, y }));
     }
     setClickHistory((prev) => [...prev, { x, y, type: CLICK }]);
   };
@@ -127,6 +131,7 @@ export const Minesweeper2 = () => {
     }
     return acc;
   }, board);
+  console.timeEnd("Minesweeper2");
   return (
     <div className="App">
       <div>
