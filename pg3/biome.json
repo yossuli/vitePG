@@ -1,14 +1,12 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.2.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
   "extends": [],
   "files": { "ignoreUnknown": true },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
-    "ignore": [],
+    "includes": ["**"],
     "indentWidth": 2,
     "indentStyle": "space",
     "lineWidth": 80
@@ -35,14 +33,15 @@
     }
   },
   "linter": {
-    "ignore": ["app/.hc.type.ts"],
+    "includes": ["**", "!**/app/.hc.type.ts"],
     "rules": {
       "recommended": true,
       "a11y": {
         "useAltText": "warn",
         "useValidAriaProps": "error",
         "useValidAriaValues": "warn",
-        "useValidLang": "warn"
+        "useValidLang": "warn",
+        "noStaticElementInteractions": "off"
       },
       "complexity": {
         "noBannedTypes": "warn",
@@ -62,7 +61,6 @@
         "noUnusedFunctionParameters": "error",
         "noUnusedImports": "error",
         "noUnusedVariables": "warn",
-        "useArrayLiterals": "error",
         "useHookAtTopLevel": "error",
         "useImportExtensions": "off"
       },
@@ -77,6 +75,12 @@
         "noYodaExpression": {
           "level": "error",
           "fix": "safe"
+        },
+        "noParameterAssign": {
+          "level": "error",
+          "options": {
+            "propertyAssignment": "deny"
+          }
         },
         "useAsConstAssertion": {
           "level": "error",
@@ -103,18 +107,11 @@
           "level": "error",
           "fix": "safe"
         },
-        "useShorthandArrayType": "error"
-      },
-      "suspicious": {
-        "noConsole": "off",
-        "noConsoleLog": "warn",
-        "noExplicitAny": "warn",
-        "noArrayIndexKey": "warn"
-      },
-      "nursery": {
-        "noDuplicateElseIf": "error",
-        "noIrregularWhitespace": "error",
-        "noTemplateCurlyInString": "warn",
+        "useArrayLiterals": "error",
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": { "syntax": "shorthand" }
+        },
         "useAtIndex": "info",
         "useCollapsedIf": "info",
         "useConsistentCurlyBraces": {
@@ -127,7 +124,16 @@
             "allowConstantExport": true
           }
         }
-      }
+      },
+      "suspicious": {
+        "noConsole": "off",
+        "noExplicitAny": "warn",
+        "noArrayIndexKey": "warn",
+        "noDuplicateElseIf": "error",
+        "noIrregularWhitespace": "error",
+        "noTemplateCurlyInString": "warn"
+      },
+      "nursery": {}
     }
   }
 }
