@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useCache = <T extends any[], U>(fn: (...args: T) => U) => {
@@ -13,10 +13,10 @@ export const useCache = <T extends any[], U>(fn: (...args: T) => U) => {
 
       const result = fn(...args);
 
-      cache.current[strKey] = result;
+      cache.current[strKey] = structuredClone(result);
       return result;
     },
-    [fn, cache]
+    [fn],
   );
 
   return cachedFn;

@@ -15,11 +15,11 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {validPath === "" && (
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        <a href="/1">Minesweeper 3</a>
-        <a href="/2">Minesweeper 3</a>
-        <a href="/minesweeper">Minesweeper 3</a>
-        <a href="/minesweeper2">Minesweeper 3</a>
-        <a href="/minesweeper3">Minesweeper 3</a>
+        <a href="/1">1</a>
+        <a href="/2">2</a>
+        <a href="/minesweeper">minesweeper</a>
+        <a href="/minesweeper2">minesweeper2</a>
+        <a href="/minesweeper3">minesweeper3</a>
       </div>
     )}
     {validPath === "/1" && <App />}

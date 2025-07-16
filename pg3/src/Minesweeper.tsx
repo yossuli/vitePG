@@ -1,52 +1,12 @@
 import "./App.css";
 import { useState } from "react";
-
-type Size = { width: number; height: number };
-
-type BasicSettings = Size & { bombs: number };
-type Pos = { x: number; y: number };
-type Board<T = number> = T[][];
-type BOMB_MAP_TYPE = (typeof BOMB_MAP_TYPES)[number];
-type CLICK_TYPE = (typeof CLICK_TYPES)[number];
-type BombMap = Board<BOMB_MAP_TYPE>;
-
-const DIRECTIONS = [
-  [-1, -1],
-  [-1, 0],
-  [-1, 1],
-  [0, -1],
-  [0, 1],
-  [1, -1],
-  [1, 0],
-  [1, 1],
-] as const satisfies [number, number][];
-
-const colors = ["#0000", "#66b", "#6b6", "#b66", "#668"];
-
-const {
-  width: W,
-  height: H,
-  bombs: BN,
-} = { width: 9, height: 9, bombs: 10 } as const satisfies BasicSettings;
-
-const CLICK_TYPES = [0, 1] as const;
-const BOMB_MAP_TYPES = [0, 1] as const;
-
-const [C, B] = BOMB_MAP_TYPES;
-const [CLICK, FLAG] = CLICK_TYPES;
-const STONE = -1;
-
-const genBoard = <T extends number = 0>(
-  { width, height }: Size,
-  fill: T
-): Board<T> =>
-  Array.from({ length: width }, () =>
-    Array.from({ length: height }, () => fill)
-  );
+import { B, C, CLICK, H, STONE, W, colors } from "./constants";
+import type { BasicSettings, Board, BombMap, CLICK_TYPE, Pos } from "./types";
+import { around, bombCount, genBoard } from "./utils";
 
 const genBombs = (
   { width, height, bombs }: BasicSettings,
-  { x, y }: Pos
+  { x, y }: Pos,
 ): BombMap => {
   const board: BombMap = genBoard({ width, height }, 0);
   let placedBombs = 0;
@@ -64,29 +24,13 @@ const genBombs = (
   return board;
 };
 
-const bombCount = ({ x, y }: Pos, bombMap: Board) =>
-  bombMap
-    .slice(Math.max(0, x - 1), Math.min(bombMap.length, x + 2))
-    .map((row) => row.slice(Math.max(0, y - 1), Math.min(row.length, y + 2)))
-    .flat()
-    .filter((cell) => cell === B).length;
-
-const minMax = (value: number, min: number, max: number) =>
-  Math.max(min, Math.min(max, value));
-
-const around = ({ x, y }: Pos) =>
-  DIRECTIONS.map(([dx, dy]) => ({
-    x: minMax(x + dx, 0, W - 1),
-    y: minMax(y + dy, 0, H - 1),
-  }));
-
 export const Minesweeper = () => {
   console.time("Minesweeper");
   const [bombMap, setBombMap] = useState<BombMap>(
     // genBoard({ width: 9, height: 9 }, 0)
     genBoard({ width: 9, height: 9 }, 0).map((row, i) =>
-      row.map((_, j) => (i === j || (i === 0 && j === 8) ? B : C))
-    )
+      row.map((_, j) => (i === j || (i === 0 && j === 8) ? B : C)),
+    ),
   );
   const [ClickHistory, setClickHistory] = useState<
     { x: number; y: number; type: CLICK_TYPE }[]
@@ -104,7 +48,13 @@ export const Minesweeper = () => {
     const count = bombCount({ x, y }, bombMap);
     board[x][y] = count;
     if (count === 0) {
-      around({ x, y }).forEach(({ x: nx, y: ny }) => {
+      around(
+        { x, y },
+        {
+          width: W,
+          height: H,
+        },
+      ).forEach(({ x: nx, y: ny }) => {
         if (board[nx][ny] === STONE) {
           open({ x: nx, y: ny });
         }
@@ -153,7 +103,7 @@ export const Minesweeper = () => {
                 >
                   {cell}
                 </div>
-              )
+              ),
             )}
           </div>
         ))}
