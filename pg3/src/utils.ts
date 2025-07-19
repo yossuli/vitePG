@@ -54,7 +54,7 @@ export const open = <
   bombMap: BombMap,
   open: T,
 ): Board => {
-  const board: Board = JSON.parse(JSON.stringify(argBoard));
+  const board = JSON.parse(JSON.stringify(argBoard));
   const count = bombCount({ x, y }, bombMap);
   board[x][y] = count;
   if (count === 0) {

@@ -1,8 +1,16 @@
 import "./App.css";
 import { useState } from "react";
-import { B, C, CLICK, H, STONE, W, colors } from "./constants";
+import {
+  Blank,
+  Board,
+  Conditional,
+  ExprFalse,
+  ExprTrue,
+  Stone,
+} from "./components";
+import { B, C, CLICK, H, STONE, W } from "./constants";
 import { useCache } from "./hooks";
-import type { Board, BombMap, CLICK_TYPE, Pos } from "./types";
+import type { Board as BoardType, BombMap, CLICK_TYPE, Pos } from "./types";
 import { around, bombCount, genBoard } from "./utils";
 
 export const Minesweeper3 = () => {
@@ -16,7 +24,7 @@ export const Minesweeper3 = () => {
   const [ClickHistory, setClickHistory] = useState<
     { x: number; y: number; type: CLICK_TYPE }[]
   >([]);
-  const board: Board = genBoard({ width: 9, height: 9 }, STONE);
+  const board: BoardType = genBoard({ width: 9, height: 9 }, STONE);
 
   const clickHandler = ({ x, y }: Pos) => {
     if (ClickHistory.length === 0) {
@@ -25,8 +33,9 @@ export const Minesweeper3 = () => {
     setClickHistory((prev) => [...prev, { x, y, type: CLICK }]);
   };
 
-  const open = useCache(({ x, y }: Pos, board: Board): Board => {
+  const open = useCache(({ x, y }: Pos, board: BoardType): BoardType => {
     const count = bombCount({ x, y }, bombMap);
+    // biome-ignore lint: allow
     board[x][y] = count;
     if (count === 0) {
       around(
@@ -53,44 +62,18 @@ export const Minesweeper3 = () => {
   console.timeEnd("Minesweeper3");
   return (
     <div className="App">
-      <div>
-        {computedBoard.map((row, r) => (
-          <div key={r} style={{ display: "flex" }}>
-            {row.map((cell, c) =>
-              cell === STONE ? (
-                <div
-                  key={`${r}-${c}`}
-                  style={{
-                    width: 20,
-                    height: 20,
-                    border: "5px outset #bbb",
-                    backgroundColor: "#888",
-                  }}
-                  onClick={() => clickHandler({ x: r, y: c })}
-                  onKeyDown={() => clickHandler({ x: r, y: c })}
-                />
-              ) : (
-                <div
-                  key={`${r}-${c}`}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    border: "1px solid black",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: colors[cell],
-                  }}
-                  onClick={() => clickHandler({ x: r, y: c })}
-                  onKeyDown={() => clickHandler({ x: r, y: c })}
-                >
-                  {cell}
-                </div>
-              ),
-            )}
-          </div>
-        ))}
-      </div>
+      <Board board={computedBoard}>
+        {(cell, x, y) => (
+          <Conditional condition={cell === STONE}>
+            <ExprTrue>
+              <Stone open={() => clickHandler({ x, y })} />
+            </ExprTrue>
+            <ExprFalse>
+              <Blank number={cell} />
+            </ExprFalse>
+          </Conditional>
+        )}
+      </Board>
       <button
         type="button"
         onClick={() => setClickHistory((prev) => prev.slice(0, -1))}
