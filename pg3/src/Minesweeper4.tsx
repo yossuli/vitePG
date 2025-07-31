@@ -9,7 +9,7 @@ import {
   Stone,
 } from "./components";
 import { B, C, CLICK, STONE } from "./constants";
-import { useCache } from "./hooks";
+import { useCache2 } from "./hooks";
 import type { Board as BoardType, BombMap, CLICK_TYPE, Pos } from "./types";
 import { genBoard, open } from "./utils";
 
@@ -33,7 +33,7 @@ export const Minesweeper4 = () => {
     setClickHistory((prev) => [...prev, { x, y, type: CLICK }]);
   };
 
-  const cachedOpen = useCache(open);
+  const cachedOpen = useCache2(open);
 
   const computedBoard = ClickHistory.reduce((acc, { x, y, type }) => {
     if (type === CLICK) {

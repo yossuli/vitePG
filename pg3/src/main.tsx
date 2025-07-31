@@ -6,6 +6,8 @@ import App2 from "./App2.tsx";
 import { Minesweeper } from "./Minesweeper.tsx";
 import { Minesweeper2 } from "./Minesweeper2.tsx";
 import { Minesweeper3 } from "./Minesweeper3.tsx";
+import { Minesweeper4 } from "./Minesweeper4.tsx";
+import { Minesweeper5 } from "./Minesweeper5.tsx";
 
 const path = window.location.pathname;
 
@@ -20,6 +22,8 @@ createRoot(document.getElementById("root")!).render(
         <a href="/minesweeper">minesweeper</a>
         <a href="/minesweeper2">minesweeper2</a>
         <a href="/minesweeper3">minesweeper3</a>
+        <a href="/minesweeper4">minesweeper4</a>
+        <a href="/minesweeper5">minesweeper5</a>
       </div>
     )}
     {validPath === "/1" && <App />}
@@ -27,5 +31,7 @@ createRoot(document.getElementById("root")!).render(
     {validPath === "/minesweeper" && <Minesweeper />}
     {validPath === "/minesweeper2" && <Minesweeper2 />}
     {validPath === "/minesweeper3" && <Minesweeper3 />}
-  </StrictMode>
+    {validPath === "/minesweeper4" && <Minesweeper4 />}
+    {validPath === "/minesweeper5" && <Minesweeper5 />}
+  </StrictMode>,
 );
