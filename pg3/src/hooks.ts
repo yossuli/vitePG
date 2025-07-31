@@ -1,6 +1,5 @@
 import { useCallback, useRef } from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useCache = <T extends any[], U>(fn: (...args: T) => U) => {
   const cache = useRef<Record<string, U>>({});
 

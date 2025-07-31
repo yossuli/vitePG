@@ -44,7 +44,7 @@ export const Minesweeper2 = () => {
   console.timeEnd("Minesweeper2");
   return (
     <div className="App">
-      <Board board={computedBoard}>
+      <Board board={computedBoard} >
         {(cell, x, y) => (
           <Conditional condition={cell === STONE}>
             <ExprTrue>
