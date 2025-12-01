@@ -1,13 +1,6 @@
 import "./App.css";
 import { useState } from "react";
-import {
-  Blank,
-  Board,
-  Conditional,
-  ExprFalse,
-  ExprTrue,
-  Stone,
-} from "./components";
+import { Blank, Board, Conditional, False, Stone, True } from "./components";
 import { B, C, CLICK, H, STONE, W } from "./constants";
 import type {
   BasicSettings,
@@ -87,12 +80,12 @@ export const Minesweeper = () => {
       <Board board={board}>
         {(cell, x, y) => (
           <Conditional condition={cell === STONE}>
-            <ExprTrue>
+            <True>
               <Stone open={() => clickHandler({ x, y })} />
-            </ExprTrue>
-            <ExprFalse>
+            </True>
+            <False>
               <Blank number={cell} />
-            </ExprFalse>
+            </False>
           </Conditional>
         )}
       </Board>

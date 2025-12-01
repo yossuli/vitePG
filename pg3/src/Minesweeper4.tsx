@@ -1,13 +1,6 @@
 import "./App.css";
 import { useState } from "react";
-import {
-  Blank,
-  Board,
-  Conditional,
-  ExprFalse,
-  ExprTrue,
-  Stone,
-} from "./components";
+import { Blank, Board, Conditional, False, Stone, True } from "./components";
 import { B, C, CLICK, STONE } from "./constants";
 import { useCache2 } from "./hooks";
 import type { Board as BoardType, BombMap, CLICK_TYPE, Pos } from "./types";
@@ -47,12 +40,12 @@ export const Minesweeper4 = () => {
       <Board board={computedBoard}>
         {(cell, x, y) => (
           <Conditional condition={cell === STONE}>
-            <ExprTrue>
+            <True>
               <Stone open={() => clickHandler({ x, y })} />
-            </ExprTrue>
-            <ExprFalse>
+            </True>
+            <False>
               <Blank number={cell} />
-            </ExprFalse>
+            </False>
           </Conditional>
         )}
       </Board>

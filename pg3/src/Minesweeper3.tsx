@@ -1,13 +1,6 @@
 import "./App.css";
 import { useState } from "react";
-import {
-  Blank,
-  Board,
-  Conditional,
-  ExprFalse,
-  ExprTrue,
-  Stone,
-} from "./components";
+import { Blank, Board, Conditional, False, Stone, True } from "./components";
 import { B, C, CLICK, H, STONE, W } from "./constants";
 import { useCache } from "./hooks";
 import type { Board as BoardType, BombMap, CLICK_TYPE, Pos } from "./types";
@@ -24,6 +17,8 @@ export const Minesweeper3 = () => {
   const [ClickHistory, setClickHistory] = useState<
     { x: number; y: number; type: CLICK_TYPE }[]
   >([]);
+
+  console.log("ClickHistory", ClickHistory);
   const board: BoardType = genBoard({ width: 9, height: 9 }, STONE);
 
   const clickHandler = ({ x, y }: Pos) => {
@@ -55,6 +50,7 @@ export const Minesweeper3 = () => {
 
   const computedBoard = ClickHistory.reduce((acc, { x, y, type }) => {
     if (type === CLICK) {
+      // console.log("x, y", x, y);
       return open({ x, y }, acc);
     }
     return acc;
@@ -65,12 +61,12 @@ export const Minesweeper3 = () => {
       <Board board={computedBoard}>
         {(cell, x, y) => (
           <Conditional condition={cell === STONE}>
-            <ExprTrue>
+            <True>
               <Stone open={() => clickHandler({ x, y })} />
-            </ExprTrue>
-            <ExprFalse>
+            </True>
+            <False>
               <Blank number={cell} />
-            </ExprFalse>
+            </False>
           </Conditional>
         )}
       </Board>

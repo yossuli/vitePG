@@ -11,5 +11,15 @@ export type BombMap = Board<BOMB_MAP_TYPE>;
 export type DeepReadonly<T> = T extends (infer U)[]
   ? readonly DeepReadonly<U>[]
   : T extends object
-  ? { readonly [K in keyof T]: DeepReadonly<T[K]> }
-  : T;
+    ? { readonly [K in keyof T]: DeepReadonly<T[K]> }
+    : T;
+
+export type NonNull = number | string | boolean | object;
+
+export type NullableTuple<T> = {
+  [K in keyof T]: T[K] | null | undefined;
+};
+
+export type NonNullableTuple<T> = {
+  [K in keyof T]: NonNullable<T[K]>;
+};

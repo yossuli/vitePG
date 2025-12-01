@@ -6,7 +6,9 @@ function App() {
   const [n, setN] = useState(0);
   const fib = (n: number): number => {
     console.log(n);
-    if (n <= 1) return n;
+    if (n <= 1) {
+      return n;
+    }
     return fib(n - 1) + fib(n - 2);
   };
   return (

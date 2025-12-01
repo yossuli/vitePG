@@ -3,25 +3,38 @@ import "./App.css";
 import type { ReactNode } from "react";
 import React from "react";
 import { colors } from "./constants";
-import type { Board as BoardType } from "./types";
+import type { Board as BoardType, NonNull, NullableTuple } from "./types";
 
 export const Conditional = ({
   condition,
-  children,
+  children: [exprTrue, exprFalse],
 }: {
   condition: boolean;
-  children: [ReactNode, ReactNode];
-}) => {
-  const [exprTrue, exprFalse] = children;
-  return <>{condition ? exprTrue : exprFalse}</>;
-};
+  children: [ExprTrueElement, ExprFalseElement];
+}) => <>{condition ? exprTrue : exprFalse}</>;
 
-export const ExprTrue = ({ children }: { children: ReactNode }) => (
-  <>{children}</>
-);
-export const ExprFalse = ({ children }: { children: ReactNode }) => (
-  <>{children}</>
-);
+type ExprTrueElement = ReactNode;
+type ExprFalseElement = ReactNode;
+
+export const True = ({ children }: { children: ReactNode }) => children;
+
+export const False = ({ children }: { children: ReactNode }) => children;
+
+export const Define = <T extends NonNull[]>({
+  nullableProps,
+  children,
+}: {
+  nullableProps: NullableTuple<T>;
+  children: (props: T) => ReactNode;
+}) => {
+  if (nullableProps.some((prop) => prop === null || prop === undefined)) {
+    return null;
+  }
+  const nonNullProps = nullableProps.filter(
+    (prop): prop is T[number] => prop !== null && prop !== undefined,
+  ) as T;
+  return <>{children(nonNullProps)}</>;
+};
 
 export const Board = ({
   board,
